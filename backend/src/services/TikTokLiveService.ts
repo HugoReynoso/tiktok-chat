@@ -159,7 +159,7 @@ export class TikTokLiveService {
       this.stop();
       this.status("ended");
     });
-    connection.on(ControlEvent.ERROR, () => {
+    connection.on(ControlEvent.ERROR, (error) => {
         console.error("TikTok ControlEvent.ERROR:", error);
 
     });
