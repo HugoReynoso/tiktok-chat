@@ -11,7 +11,7 @@ import { i18n } from "./locales";
 import "./style.css";
 const router = createRouter({
   history:
-    import.meta.env.VITE_DEMO === "true"
+    import.meta.env.VITE_DEMO === "true" || import.meta.env.VITE_ROUTER_MODE === "hash"
       ? createWebHashHistory(import.meta.env.BASE_URL)
       : createWebHistory(import.meta.env.BASE_URL),
   routes: [

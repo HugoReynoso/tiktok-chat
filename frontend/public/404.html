@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TikTok Chat — Apri l’app</title>
+    <script>
+      // Recover links created before GitHub Pages switched to hash routing.
+      const base = '/tiktok-chat/';
+      const route = location.pathname.startsWith(base) ? location.pathname.slice(base.length).replace(/\/$/, '') : '';
+      const routes = ['live', 'chat', 'rankings', 'voice', 'alerts', 'rules', 'settings', 'history', 'statistics'];
+      if (routes.includes(route)) location.replace(base + '#/' + route + location.search);
+    </script>
+  </head>
+  <body>
+    <h1>TikTok Chat</h1>
+    <p>La pagina richiesta non è disponibile.</p>
+    <a href="/tiktok-chat/">Apri l’app</a>
+  </body>
+</html>

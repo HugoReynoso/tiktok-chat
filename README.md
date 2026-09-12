@@ -1,12 +1,28 @@
 # TikTok Chat
 
-**[Apri la demo online](https://hugoreynoso.github.io/tiktok-chat/)** · **[Repository GitHub](https://github.com/HugoReynoso/tiktok-chat)**
+**[Apri l’app online](https://hugoreynoso.github.io/tiktok-chat/)** · **[Repository GitHub](https://github.com/HugoReynoso/tiktok-chat)**
 
-## Demo pubblica e immagine preview
+## App pubblica, Render e refresh
 
-La demo su GitHub Pages permette di esplorare l’interfaccia, avviare e mettere in pausa una chat simulata, provare TTS, impostazioni, classifiche e regole regalo. **Tutti i nomi, messaggi, regali e numeri della demo sono simulati**, come indicato in ogni schermata. Non si collega a TikTok e non invia richieste Socket.IO. Le sessioni demo non vengono salvate nello storico delle LIVE.
+La versione pubblicata su GitHub Pages è ora l’app reale: `frontend/.env.pages` imposta `VITE_DEMO=false` e `VITE_API_URL=https://tiktok-chat-9pox.onrender.com`. Inserisci lo username di un account attualmente in LIVE per collegarti. L’URL del backend è pubblico; la chiave di firma TikTok resta esclusivamente su Render.
 
-GitHub Pages ospita solo il frontend statico: per collegarsi a una LIVE reale è necessario avviare anche il backend Node seguendo le istruzioni sotto. Nessun backend viene pubblicato su Pages.
+GitHub Pages ospita il frontend statico; il backend Node è ospitato su Render. [Health check backend](https://tiktok-chat-9pox.onrender.com/api/health). Un health check positivo non garantisce che TikTok accetti una specifica LIVE.
+
+### Refresh e link diretti
+
+La navigazione pubblica usa il router hash indipendentemente dalla modalità demo, tramite `VITE_ROUTER_MODE=hash`. Link come [Chat](https://hugoreynoso.github.io/tiktok-chat/#/chat) e [Classifiche](https://hugoreynoso.github.io/tiktok-chat/#/rankings) funzionano anche dopo F5 o apertura in una nuova scheda. I vecchi link `/tiktok-chat/chat` e `/tiktok-chat/live` vengono convertiti dai browser tramite `404.html`; per nuovi collegamenti usa sempre gli URL con `#/`.
+
+Il refresh ricarica l’app: non mantiene la connessione TikTok né i dati di sessione in memoria. Le impostazioni locali restano salvate; premi di nuovo Connetti alla LIVE per aprire una nuova sessione. La riproduzione audio richiede comunque un gesto dell’utente.
+
+### Connessione robusta
+
+- WebSocket è il primo trasporto; `tryAllTransports: true` permette di provare realmente HTTP polling quando WebSocket non è disponibile.
+- Timeout iniziale di 60 secondi per consentire il risveglio del servizio Render, con massimo 5 riconnessioni e ritardo progressivo da 2 a 10 secondi, con jitter.
+- Durante i tentativi l’app mostra Riconnessione; una volta esauriti torna a uno stato di errore con possibilità di riprovare manualmente.
+- Disconnetti chiude il trasporto, annulla i tentativi automatici e libera la sessione server. Non accoda comandi da inviare alla connessione successiva.
+- Senza `VITE_API_URL`, lo sviluppo locale usa il proxy Vite della stessa origine: funziona anche aprendo il frontend dal telefono sulla LAN, se l’origine è autorizzata sul backend.
+
+Le voci TTS dipendono dal browser. Interruzioni e riavvii del backend possono perdere eventi o aprire una nuova sessione; non viene promessa continuità dei contatori durante un’interruzione.
 
 ### Preview per il tuo sito
 
@@ -14,7 +30,7 @@ GitHub Pages ospita solo il frontend statico: per collegarsi a una LIVE reale è
 
 - File PNG: `frontend/public/preview/tiktok-chat-preview.png` (1440 × 1040 pixel).
 - [Scarica/apri l’immagine pubblica](https://hugoreynoso.github.io/tiktok-chat/preview/tiktok-chat-preview.png).
-- È una cattura dell’interfaccia reale della demo, non un mockup inventato.
+- È una cattura della precedente modalità demo: i dati nell’immagine sono simulati. L’app pubblicata ora usa gli eventi reali del backend.
 
 Esempio di collegamento dal tuo sito:
 
@@ -37,9 +53,9 @@ Esempio di collegamento dal tuo sito:
 
 ### Pubblicazione GitHub Pages
 
-Il workflow `.github/workflows/pages.yml` compila e pubblica la demo ad ogni push su `main`. Usa Node 24, `npm ci` e `npm run build:demo`. La sorgente Pages nelle impostazioni del repository deve essere **GitHub Actions**.
+Il workflow `.github/workflows/pages.yml` compila e pubblica l’app ad ogni push su `main`. Usa Node 24, `npm ci` e `npm run build:demo`. Questo comando conserva il nome storico, ma usa la configurazione `.env.pages`, ora collegata a Render. La sorgente Pages nelle impostazioni del repository deve essere **GitHub Actions**.
 
-`frontend/.env.pages` abilita esclusivamente la demo e il percorso `/tiktok-chat/`. Il router usa URL hash (`#/chat`) affinché il ricaricamento delle pagine funzioni su hosting statico. La build normale e `npm run dev` mantengono la connessione reale al backend.
+`frontend/.env.pages` configura il percorso `/tiktok-chat/`, il backend Render e il router hash (`#/chat`). `frontend/.env.production` contiene l’URL per la build normale. `npm run dev` usa il proxy locale se `VITE_API_URL` non è specificato.
 
 ```sh
 npm run build:demo
@@ -47,7 +63,7 @@ npm run preview:demo -w frontend
 # Apri http://localhost:4173/tiktok-chat/
 ```
 
-Per rigenerare l’immagine, con questa anteprima attiva e Playwright/Edge disponibili, esegui `node scripts/preview-demo.cjs`. Se necessario, imposta `PLAYWRIGHT_MODULE` al percorso del modulo Playwright.
+Per rigenerare l’immagine simulata, imposta temporaneamente la variabile d’ambiente `VITE_DEMO=true` prima della build. Con l’anteprima attiva e Playwright/Edge disponibili, esegui `node scripts/preview-demo.cjs`. Se necessario, imposta `PLAYWRIGHT_MODULE` al percorso del modulo Playwright. Non mantenere l’override demo quando pubblichi la versione reale.
 
 Web app mobile-first per leggere e ascoltare la chat di TikTok LIVE, visualizzare regali e classifiche. Vue 3 + TypeScript + Vite + Pinia + Vue Router, backend Node.js + Express + Socket.IO + `tiktok-live-connector`. Nessun database, nessun dato dimostrativo mescolato ai dati reali.
 

@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "concurrently -k -n API,WEB \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "build": "npm run build -w backend && npm run build -w frontend",
-    "test": "npm run test -w backend",
+    "test": "npm run test -w backend && npm run test:connection",
+    "test:connection": "tsx --test frontend/tests/*.test.ts",
     "build:demo": "npm run build:demo -w frontend"
   },
   "devDependencies": {

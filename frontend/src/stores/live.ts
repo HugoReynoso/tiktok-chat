@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { io, type Socket } from "socket.io-client";
+import { type Socket } from "socket.io-client";
+import { createLiveSocket } from '../services/connection';
 import {
   emptyStats,
   type ClientEvents,
@@ -144,27 +145,34 @@ export const useLive = defineStore("live", () => {
   }
   function setup() {
     if (socket) return socket;
-    
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-      
-      socket = io(API_URL, {
-        autoConnect: false,
-        reconnectionAttempts: 5,
-        timeout: 10000,
-        transports: ["websocket", "polling"],
-      });
+    socket = createLiveSocket(import.meta.env.VITE_API_URL);
     socket.on("connect", () => {
-      if (desired) socket!.emit("live:connect", settings.data.username);
+      if (!desired) { socket!.disconnect(); return; }
+      error.value = '';
+      status.value = 'connecting';
+      socket!.emit("live:connect", username.value);
     });
     socket.on("connect_error", () => {
+      if (!desired) return;
       error.value = "serverUnavailable";
-      status.value = "error";
+      status.value = socket!.active ? "reconnecting" : "error";
+      if (!socket!.active) desired = false;
+    });
+    socket.io.on('reconnect_attempt', () => {
+      if (desired) status.value = 'reconnecting';
+    });
+    socket.io.on('reconnect_failed', () => {
+      desired = false;
+      status.value = 'error';
+      error.value = 'serverUnavailable';
+      socket!.disconnect();
     });
     socket.on("disconnect", () => {
       archive();
       stopAudio();
-      status.value = desired ? "reconnecting" : "disconnected";
+      status.value = desired ? (socket!.active ? "reconnecting" : "error") : "disconnected";
       if (desired) error.value = "sessionInterrupted";
+      if (!socket!.active) desired = false;
     });
     socket.on("live:status", (data) => {
       status.value = data.status;
@@ -229,6 +237,7 @@ export const useLive = defineStore("live", () => {
     return socket;
   }
   function connect() {
+    if (active.value) return;
     if (isDemo) {
       startDemo();
       return;
@@ -248,7 +257,7 @@ export const useLive = defineStore("live", () => {
     username.value = settings.data.username.replace(/^@/, "");
     const connection = setup();
     if (connection.connected)
-      connection.emit("live:connect", settings.data.username);
+      connection.emit("live:connect", username.value);
     else connection.connect();
   }
   function disconnect() {
@@ -257,10 +266,13 @@ export const useLive = defineStore("live", () => {
       demoTimer = undefined;
     }
     desired = false;
-    socket?.emit("live:disconnect");
+    // Closing the transport also cancels retries and frees the server session.
+    // Never buffer a disconnect command for the next connection.
+    socket?.disconnect();
     archive();
     stopAudio();
     status.value = "disconnected";
+    error.value = '';
   }
   function reset() {
     if (isDemo) {
