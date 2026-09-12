@@ -60,6 +60,9 @@ export class TikTokLiveService {
   private async open(generation: number) {
     if (!this.active || generation !== this.generation) return;
     this.status(this.attempts ? "reconnecting" : "connecting");
+    
+    console.log("EulerStream API key configured:",Boolean(process.env.SIGN_API_KEY));
+    
     const connection = new TikTokLiveConnection(this.username, {
       enableExtendedGiftInfo: true,
       processInitialData: false,
@@ -157,7 +160,8 @@ export class TikTokLiveService {
       this.status("ended");
     });
     connection.on(ControlEvent.ERROR, () => {
-      /* Connection/disconnection paths provide sanitized user-facing errors. */
+        console.error("TikTok ControlEvent.ERROR:", error);
+
     });
     connection.on(ControlEvent.DISCONNECTED, () => {
       if (current()) this.schedule(generation);
@@ -174,14 +178,32 @@ export class TikTokLiveService {
       this.status("connected");
       this.socket.emit("live:connected", { username: this.username });
       this.dirty = true;
-    } catch (error: unknown) {
-      if (!current()) return;
-      const message = error instanceof Error ? error.message : "";
-      if (/not live|offline|LIVE_NOT_FOUND/i.test(message)) {
-        this.stop();
-        this.status("error", "offline");
-      } else this.schedule(generation);
-    }
+    }  catch (error: unknown) {
+          if (!current()) return;
+        
+          console.error("TikTok connection failed:", error);
+        
+          const message =
+            error instanceof Error
+              ? error.message
+              : String(error);
+        
+          console.error("TikTok error message:", message);
+        
+          if (/not live|offline|LIVE_NOT_FOUND/i.test(message)) {
+            this.stop();
+            this.status("error", "offline");
+            return;
+          }
+        
+          if (/sign|signature|euler|401|403|429/i.test(message)) {
+            console.error(
+              "TikTok signing/EulerStream error. Check SIGN_API_KEY."
+            );
+          }
+        
+          this.schedule(generation);
+}
   }
   private schedule(generation: number) {
     if (this.retry || !this.active) return;
