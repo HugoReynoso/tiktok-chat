@@ -64,7 +64,7 @@ export class TikTokLiveService {
     console.log("EulerStream API key configured:",Boolean(process.env.SIGN_API_KEY));
     
     const connection = new TikTokLiveConnection(this.username, {
-      enableExtendedGiftInfo: true,
+      enableExtendedGiftInfo: false,
       processInitialData: false,
       signApiKey: process.env.SIGN_API_KEY,
     });
