@@ -144,11 +144,15 @@ export const useLive = defineStore("live", () => {
   }
   function setup() {
     if (socket) return socket;
-    socket = io({
-      autoConnect: false,
-      reconnectionAttempts: 5,
-      timeout: 10000,
-    });
+    
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+      
+      socket = io(API_URL, {
+        autoConnect: false,
+        reconnectionAttempts: 5,
+        timeout: 10000,
+        transports: ["websocket", "polling"],
+      });
     socket.on("connect", () => {
       if (desired) socket!.emit("live:connect", settings.data.username);
     });
