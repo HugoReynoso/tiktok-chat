@@ -1,4 +1,6 @@
-# TikTok Chat
+# TikTok Chat — lettura commenti TikTok LIVE, voce e regali
+
+TikTok Chat è un'app web per leggere commenti e chat TikTok LIVE, ascoltare i messaggi con la sintesi vocale (TTS), gestire regali e visualizzare classifiche in tempo reale.
 
 **[Apri l’app online](https://hugoreynoso.github.io/tiktok-chat/)** · **[Repository GitHub](https://github.com/HugoReynoso/tiktok-chat)**
 
