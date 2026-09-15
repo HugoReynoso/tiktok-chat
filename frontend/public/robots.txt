@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://hugoreynoso.github.io/tiktok-chat/sitemap.xml
+Sitemap: https://hugoreynoso.github.io/utility-tiktok-chat/sitemap.xml

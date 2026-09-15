@@ -14,7 +14,7 @@ const assert = require("node:assert/strict");
     page.on("request", (request) => {
       if (request.url().includes("socket.io")) sockets.push(request.url());
     });
-    await page.goto("http://127.0.0.1:4173/tiktok-chat/");
+    await page.goto("http://127.0.0.1:4173/utility-tiktok-chat/");
     await page.getByRole("button", { name: "Avvia demo" }).waitFor();
     await page.evaluate(() => document.fonts.ready);
     fs.mkdirSync("frontend/public/preview", { recursive: true });
@@ -36,13 +36,13 @@ const assert = require("node:assert/strict");
       "settings",
       "history",
     ]) {
-      await page.goto(`http://127.0.0.1:4173/tiktok-chat/#/${route}`);
+      await page.goto(`http://127.0.0.1:4173/utility-tiktok-chat/#/${route}`);
       await page.locator("h1").waitFor();
       await page.reload();
       await page.locator("h1").waitFor();
     }
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("http://127.0.0.1:4173/tiktok-chat/#/live");
+    await page.goto("http://127.0.0.1:4173/utility-tiktok-chat/#/live");
     assert.ok(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

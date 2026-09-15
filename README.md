@@ -2,7 +2,7 @@
 
 TikTok Chat è un'app web per leggere commenti e chat TikTok LIVE, ascoltare i messaggi con la sintesi vocale (TTS), gestire regali e visualizzare classifiche in tempo reale.
 
-**[Apri l’app online](https://hugoreynoso.github.io/tiktok-chat/)** · **[Repository GitHub](https://github.com/HugoReynoso/tiktok-chat)**
+**[Apri l’app online](https://hugoreynoso.github.io/utility-tiktok-chat/)** · **[Repository GitHub](https://github.com/HugoReynoso/utility-tiktok-chat)**
 
 ## App pubblica, Render e refresh
 
@@ -12,7 +12,7 @@ GitHub Pages ospita il frontend statico; il backend Node è ospitato su Render. 
 
 ### Refresh e link diretti
 
-La navigazione pubblica usa il router hash indipendentemente dalla modalità demo, tramite `VITE_ROUTER_MODE=hash`. Link come [Chat](https://hugoreynoso.github.io/tiktok-chat/#/chat) e [Classifiche](https://hugoreynoso.github.io/tiktok-chat/#/rankings) funzionano anche dopo F5 o apertura in una nuova scheda. I vecchi link `/tiktok-chat/chat` e `/tiktok-chat/live` vengono convertiti dai browser tramite `404.html`; per nuovi collegamenti usa sempre gli URL con `#/`.
+La navigazione pubblica usa il router hash indipendentemente dalla modalità demo, tramite `VITE_ROUTER_MODE=hash`. Link come [Chat](https://hugoreynoso.github.io/utility-tiktok-chat/#/chat) e [Classifiche](https://hugoreynoso.github.io/utility-tiktok-chat/#/rankings) funzionano anche dopo F5 o apertura in una nuova scheda. I vecchi link `/utility-tiktok-chat/chat` e `/utility-tiktok-chat/live` vengono convertiti dai browser tramite `404.html`; per nuovi collegamenti usa sempre gli URL con `#/`.
 
 Il refresh ricarica l’app: non mantiene la connessione TikTok né i dati di sessione in memoria. Le impostazioni locali restano salvate; premi di nuovo Connetti alla LIVE per aprire una nuova sessione. La riproduzione audio richiede comunque un gesto dell’utente.
 
@@ -31,19 +31,19 @@ Le voci TTS dipendono dal browser. Interruzioni e riavvii del backend possono pe
 ![TikTok Chat — anteprima della demo con dati simulati](frontend/public/preview/tiktok-chat-preview.png)
 
 - File PNG: `frontend/public/preview/tiktok-chat-preview.png` (1440 × 1040 pixel).
-- [Scarica/apri l’immagine pubblica](https://hugoreynoso.github.io/tiktok-chat/preview/tiktok-chat-preview.png).
+- [Scarica/apri l’immagine pubblica](https://hugoreynoso.github.io/utility-tiktok-chat/preview/tiktok-chat-preview.png).
 - È una cattura della precedente modalità demo: i dati nell’immagine sono simulati. L’app pubblicata ora usa gli eventi reali del backend.
 
 Esempio di collegamento dal tuo sito:
 
 ```html
 <a
-  href="https://hugoreynoso.github.io/tiktok-chat/"
+  href="https://hugoreynoso.github.io/utility-tiktok-chat/"
   target="_blank"
   rel="noopener noreferrer"
 >
   <img
-    src="https://hugoreynoso.github.io/tiktok-chat/preview/tiktok-chat-preview.png"
+    src="https://hugoreynoso.github.io/utility-tiktok-chat/preview/tiktok-chat-preview.png"
     alt="TikTok Chat: demo di chat live, voce e regali con dati simulati"
     width="1440"
     height="1040"
@@ -57,12 +57,12 @@ Esempio di collegamento dal tuo sito:
 
 Il workflow `.github/workflows/pages.yml` compila e pubblica l’app ad ogni push su `main`. Usa Node 24, `npm ci` e `npm run build:demo`. Questo comando conserva il nome storico, ma usa la configurazione `.env.pages`, ora collegata a Render. La sorgente Pages nelle impostazioni del repository deve essere **GitHub Actions**.
 
-`frontend/.env.pages` configura il percorso `/tiktok-chat/`, il backend Render e il router hash (`#/chat`). `frontend/.env.production` contiene l’URL per la build normale. `npm run dev` usa il proxy locale se `VITE_API_URL` non è specificato.
+`frontend/.env.pages` configura il percorso `/utility-tiktok-chat/`, il backend Render e il router hash (`#/chat`). `frontend/.env.production` contiene l’URL per la build normale. `npm run dev` usa il proxy locale se `VITE_API_URL` non è specificato.
 
 ```sh
 npm run build:demo
 npm run preview:demo -w frontend
-# Apri http://localhost:4173/tiktok-chat/
+# Apri http://localhost:4173/utility-tiktok-chat/
 ```
 
 Per rigenerare l’immagine simulata, imposta temporaneamente la variabile d’ambiente `VITE_DEMO=true` prima della build. Con l’anteprima attiva e Playwright/Edge disponibili, esegui `node scripts/preview-demo.cjs`. Se necessario, imposta `PLAYWRIGHT_MODULE` al percorso del modulo Playwright. Non mantenere l’override demo quando pubblichi la versione reale.
